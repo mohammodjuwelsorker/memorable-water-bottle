@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Bottle from "../bottle/Bottle";
 import './Bottles.css'
-import { addCartToLs, getStoredCart } from "../utilities/utilities";
+import { addCartToLs, getStoredCart, removeFromLs } from "../utilities/utilities";
 import Cart from "../cart/Cart";
 
 const Bottles = () => {
@@ -28,7 +28,7 @@ const Bottles = () => {
 
     // data load 
     useEffect(() => {
-        console.log('call the useEffect', bottles.length)
+        // console.log('call the useEffect', bottles.length)
         if (bottles.length) {
             const storeCarts = getStoredCart()
             // console.log(storeCart)
@@ -39,25 +39,31 @@ const Bottles = () => {
             for (let id = 0; id < storeCarts.length; id++) {
                 const storeId = storeCarts[id]
                 const bottle = bottles.find(bottle => bottle.id === storeId);
-                console.log(bottle)
                 // the storedCart is data  pushing 
                 storedCart.push(bottle);
             }
-            console.log(storedCart);
             setCart(storedCart)
         }
 
 
     }, [bottles])
 
+    const removeFormCartHandler = id => {
+        
+        // visual cart remove
+        const remainingCart = cart.filter(removeBottle => removeBottle.id !== id)
+        setCart(remainingCart)
+        console.log('remaining:',remainingCart)
+
+        // remove from local storage 
+        removeFromLs(id)
+    }
+
     return (
         <div>
             <h3>Bottle Here: {bottles.length}</h3>
-            <h4>cart: {cart.length}</h4>
             <div className="cart-box">
-                {
-                    cart.map(cart => <Cart cart={cart}></Cart>)
-                }
+                <Cart removeFormCartHandler={removeFormCartHandler} cart={cart}></Cart>
             </div>
             <div className="bottles-container">
                 {
